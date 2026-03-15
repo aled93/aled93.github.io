@@ -1,8 +1,641 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>AleD93</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 random test · from bundle</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: #f5f7fb;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .app {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05), 0 8px 20px rgba(0,20,40,0.1);
+            padding: 2rem 2rem 2.5rem;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 0 0 0.25rem 0;
+            color: #0b1b32;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        h1 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #4a5a72;
+            background: #eef2f8;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+        .status-bar {
+            background: #f0f4fe;
+            border-radius: 1.5rem;
+            padding: 0.8rem 1.5rem;
+            margin: 1.5rem 0 1.8rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 450;
+            color: #1e2f4a;
+            border: 1px solid #cdddfc;
+        }
+        .total-badge {
+            background: white;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .setup-area {
+            background: #f9fbfe;
+            border-radius: 1.5rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2.5rem;
+            border: 1px solid #e2eaf5;
+        }
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+            row-gap: 0.8rem;
+        }
+        .input-group label {
+            font-weight: 550;
+            color: #1d3a5c;
+            font-size: 1.2rem;
+        }
+        .input-group input {
+            font-size: 1.2rem;
+            padding: 0.7rem 1.2rem;
+            width: 110px;
+            border: 2px solid #bac8dc;
+            border-radius: 60px;
+            background: white;
+            font-weight: 500;
+            text-align: center;
+            transition: 0.15s;
+        }
+        .input-group input:focus {
+            border-color: #2b5f9e;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,85,204,0.2);
+        }
+        .input-group button {
+            background: #1a2c4e;
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid #10213b;
+            box-shadow: 0 4px 6px rgba(0,20,40,0.1);
+        }
+        .input-group button:hover {
+            background: #24426b;
+            transform: scale(1.02);
+        }
+        .input-group button:active {
+            background: #0e1f37;
+            transform: scale(0.98);
+        }
+        .input-group .hint {
+            color: #4d627a;
+            font-size: 0.95rem;
+            background: #e4ecf7;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            margin-left: auto;
+        }
+
+        /* test area */
+        .test-section {
+            margin-top: 2rem;
+        }
+        .question-card {
+            background: #ffffff;
+            border: 1px solid #dae3f0;
+            border-radius: 2rem;
+            padding: 1.8rem 2rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 6px 14px rgba(0,10,30,0.05);
+            transition: 0.1s;
+        }
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+        }
+        .q-num {
+            background: #1e3452;
+            color: white;
+            width: 2.4rem;
+            height: 2.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60%;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .q-text {
+            font-size: 1.3rem;
+            font-weight: 540;
+            line-height: 1.4;
+            color: #0a1e30;
+            margin: 0;
+        }
+        .options {
+            margin-left: 0.8rem;
+            padding-left: 1rem;
+            border-left: 4px solid #cbd6e8;
+        }
+        .option-item {
+            margin: 0.9rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.3rem 0;
+        }
+        .option-item input {
+            margin-top: 0.25rem;
+            width: 1.3rem;
+            height: 1.3rem;
+            flex-shrink: 0;
+            accent-color: #1f3b64;
+            cursor: pointer;
+        }
+        .option-item label {
+            font-size: 1.1rem;
+            line-height: 1.4;
+            color: #20364e;
+            cursor: pointer;
+        }
+        /* result highlighting */
+        .correct-option label {
+            font-weight: 600;
+            color: #0d671b;
+            background: #e2ffe6;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+        .wrong-option label {
+            font-weight: 500;
+            color: #b13b3b;
+            background: #ffeded;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            text-decoration: line-through wavy rgba(200,60,60,0.3);
+        }
+        .missed-option label {
+            font-weight: 500;
+            color: #16692b;
+            background: #dcf5e0;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            border: 2px solid #2e8b3e;
+        }
+        .option-item.missed-option input:disabled,
+        .option-item.correct-option input:disabled,
+        .option-item.wrong-option input:disabled {
+            accent-color: #6f7c93;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2.5rem 0 1.5rem;
+            gap: 1rem;
+        }
+        .btn {
+            background: #e8eef6;
+            border: 1px solid #b5c7dd;
+            font-size: 1.2rem;
+            font-weight: 500;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #142d49;
+        }
+        .btn-primary {
+            background: #1f3a60;
+            border-color: #0c203b;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,35,70,0.15);
+        }
+        .btn-primary:hover {
+            background: #2b4e7c;
+        }
+        .score-badge {
+            font-size: 1.5rem;
+            background: #0b223b;
+            color: white;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            font-weight: 600;
+        }
+        .utility {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        .error-message {
+            background: #ffecf0;
+            color: #b0083c;
+            border-radius: 60px;
+            padding: 0.8rem 2rem;
+            border: 1px solid #fbb6c6;
+            font-weight: 500;
+        }
+        .hidden {
+            display: none !important;
+        }
+        hr {
+            border: 1px solid #dee8f2;
+            margin: 2rem 0 1rem;
+        }
+        .footer-note {
+            color: #5c6e87;
+            text-align: right;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-  <h3 id="test">hello Git Pages!</h3>
+<div class="app" id="app">
+    <h1>
+        🧪 тест bundle
+        <small>random · N вопросов</small>
+    </h1>
+
+    <!-- status & total -->
+    <div class="status-bar" id="statusBar">
+        <span>📦 загрузка tests_bundle.json …</span>
+        <span class="total-badge" id="totalDisplay">—</span>
+    </div>
+
+    <!-- setup panel (always visible after load) -->
+    <div class="setup-area" id="setupPanel">
+        <div class="input-group">
+            <label for="nInput">N = </label>
+            <input type="number" id="nInput" min="1" value="5" step="1" placeholder="5">
+            <button id="generateBtn">🎲 начать тест</button>
+            <span class="hint" id="maxHint"></span>
+        </div>
+    </div>
+
+    <!-- dynamic test area (hidden until generate) -->
+    <div id="testContainer" class="test-section hidden"></div>
+
+    <!-- submit & new test buttons (hidden until test starts) -->
+    <div class="action-bar hidden" id="actionBar">
+        <button class="btn" id="newTestBtn">⟲ другой N</button>
+        <button class="btn btn-primary" id="submitBtn">✅ проверить ответы</button>
+    </div>
+
+    <!-- result panel (shows score, appears after submit) -->
+    <div id="resultPanel" class="hidden">
+        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; background: #e3edfc; border-radius: 60px; padding: 0.5rem 2rem 0.5rem 2rem;">
+            <span style="font-weight:500;">🎯 результат</span>
+            <span class="score-badge" id="scoreDisplay">0/0</span>
+            <button class="btn" id="afterSubmitNewBtn">🔁 новый тест</button>
+        </div>
+    </div>
+
+    <hr>
+    <div class="footer-note">✔️ вопросы из tests_bundle.json (локально)</div>
+</div>
+
+<script>
+    (function() {
+        // ----- DOM elements -----
+        const statusEl = document.getElementById('statusBar');
+        const totalSpan = document.getElementById('totalDisplay');
+        const setupPanel = document.getElementById('setupPanel');
+        const nInput = document.getElementById('nInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const maxHint = document.getElementById('maxHint');
+        const testContainer = document.getElementById('testContainer');
+        const actionBar = document.getElementById('actionBar');
+        const submitBtn = document.getElementById('submitBtn');
+        const newTestBtn = document.getElementById('newTestBtn');
+        const resultPanel = document.getElementById('resultPanel');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const afterSubmitNewBtn = document.getElementById('afterSubmitNewBtn');
+
+        // ----- state -----
+        let bundle = null;                // original parsed json
+        let allQuestions = [];             // flat array of all questions (with test title)
+        let currentQuestions = [];          // selected random questions for this session
+        let totalAvailable = 0;
+
+        // ----- helpers -----
+        function countQuestions(bundleData) {
+            if (!bundleData || !bundleData.tests) return 0;
+            return bundleData.tests.reduce((acc, test) => acc + (test.questions?.length || 0), 0);
+        }
+
+        function flattenQuestions(bundleData) {
+            const flat = [];
+            if (!bundleData?.tests) return flat;
+            bundleData.tests.forEach(test => {
+                if (!test.questions) return;
+                test.questions.forEach(q => {
+                    flat.push({
+                        ...q,
+                        testTitle: test.title || '—',
+                        testFile: test.file || '—'
+                    });
+                });
+            });
+            return flat;
+        }
+
+        // Fisher–Yates shuffle
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        // pick N random distinct questions
+        function pickRandomQuestions(n) {
+            if (n >= allQuestions.length) return [...allQuestions]; // all
+            const shuffled = shuffleArray(allQuestions);
+            return shuffled.slice(0, n);
+        }
+
+        // ----- render test (with currentQuestions) -----
+        function renderTest() {
+            testContainer.innerHTML = ''; // clear
+            if (!currentQuestions.length) {
+                testContainer.innerHTML = '<div class="question-card">⚠️ нет вопросов</div>';
+                return;
+            }
+
+            currentQuestions.forEach((q, qIdx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question-card';
+                qDiv.dataset.qIdx = qIdx;
+                qDiv.id = `q-${qIdx}`;
+
+                // header
+                const header = document.createElement('div');
+                header.className = 'question-header';
+                header.innerHTML = `
+                    <span class="q-num">${qIdx+1}</span>
+                    <span class="q-text">${escapeHTML(q.text)}</span>
+                `;
+                qDiv.appendChild(header);
+
+                // options container
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                const type = q.type === 'multiple' ? 'checkbox' : 'radio';
+                const nameAttr = `q_${qIdx}`; // groups radio
+
+                q.options.forEach((opt, optIdx) => {
+                    const optItem = document.createElement('div');
+                    optItem.className = 'option-item';
+
+                    const input = document.createElement('input');
+                    input.type = type;
+                    input.name = (type === 'radio') ? nameAttr : `q_${qIdx}_opt_${optIdx}`; // name for radio group
+                    input.value = optIdx;
+                    input.classList.add('option-input');
+                    input.dataset.qIdx = qIdx;
+                    input.dataset.optIdx = optIdx;
+
+                    // disable after submit will be handled later
+                    const label = document.createElement('label');
+                    label.textContent = escapeHTML(opt.text);
+
+                    optItem.appendChild(input);
+                    optItem.appendChild(label);
+                    optionsDiv.appendChild(optItem);
+                });
+
+                qDiv.appendChild(optionsDiv);
+                testContainer.appendChild(qDiv);
+            });
+        }
+
+        // tiny escape (just for safety)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // ----- grading & result highlighting -----
+        function gradeAndShow() {
+            let correctCount = 0;
+
+            // first pass: compute correctness per question
+            const questionResults = currentQuestions.map((q, qIdx) => {
+                const qContainer = document.getElementById(`q-${qIdx}`);
+                if (!qContainer) return false;
+
+                const optionInputs = qContainer.querySelectorAll('.option-input');
+                const selectedIndices = [];
+                optionInputs.forEach((inp, idx) => {
+                    if (inp.checked) selectedIndices.push(idx);
+                });
+
+                // correct indices from original question
+                const correctIndices = q.options.reduce((acc, opt, idx) => opt.correct ? acc.concat(idx) : acc, []);
+
+                let isCorrect = false;
+                if (q.type === 'single') {
+                    isCorrect = (selectedIndices.length === 1 && correctIndices.includes(selectedIndices[0]));
+                } else { // multiple
+                    const sameLength = selectedIndices.length === correctIndices.length;
+                    const allCorrectSelected = selectedIndices.every(idx => correctIndices.includes(idx));
+                    isCorrect = sameLength && allCorrectSelected;
+                }
+                if (isCorrect) correctCount++;
+                return { isCorrect, correctIndices, selectedIndices };
+            });
+
+            // second pass: apply visual classes (disable inputs, color)
+            currentQuestions.forEach((q, qIdx) => {
+                const qContainer = document.getElementById(`q-${qIdx}`);
+                if (!qContainer) return;
+                const optionInputs = qContainer.querySelectorAll('.option-input');
+                const correctIndices = q.options.reduce((acc, opt, idx) => opt.correct ? acc.concat(idx) : acc, []);
+                const selectedIndices = [];
+                optionInputs.forEach((inp, idx) => { if (inp.checked) selectedIndices.push(idx); });
+
+                optionInputs.forEach((inp, idx) => {
+                    inp.disabled = true;
+                    const parentDiv = inp.closest('.option-item');
+                    if (!parentDiv) return;
+
+                    // remove any previous extra classes
+                    parentDiv.classList.remove('correct-option', 'wrong-option', 'missed-option');
+
+                    const isCorrectOpt = correctIndices.includes(idx);
+                    const isSelected = selectedIndices.includes(idx);
+
+                    if (isCorrectOpt && isSelected) {
+                        parentDiv.classList.add('correct-option');
+                    } else if (!isCorrectOpt && isSelected) {
+                        parentDiv.classList.add('wrong-option');
+                    } else if (isCorrectOpt && !isSelected) {
+                        parentDiv.classList.add('missed-option');
+                    }
+                });
+            });
+
+            // show score
+            scoreDisplay.textContent = `${correctCount}/${currentQuestions.length}`;
+            // hide action bar, show result panel
+            actionBar.classList.add('hidden');
+            resultPanel.classList.remove('hidden');
+        }
+
+        // ----- reset UI to setup state (hide test & results) -----
+        function resetToSetup() {
+            testContainer.classList.add('hidden');
+            actionBar.classList.add('hidden');
+            resultPanel.classList.add('hidden');
+            // clear test container so old answers disappear
+            testContainer.innerHTML = '';
+            // focus on input
+            nInput.focus();
+            // update max hint after load (bundle already loaded)
+            if (totalAvailable) {
+                nInput.max = totalAvailable;
+                maxHint.textContent = `макс. ${totalAvailable}`;
+            }
+        }
+
+        // ----- start new test with N -----
+        function startTest() {
+            let n = parseInt(nInput.value, 10);
+            if (isNaN(n) || n < 1) n = 1;
+            if (totalAvailable > 0 && n > totalAvailable) n = totalAvailable;
+            nInput.value = n;  // correct if out of range
+
+            if (!allQuestions.length) {
+                alert('Нет доступных вопросов в bundle');
+                return;
+            }
+
+            currentQuestions = pickRandomQuestions(n);
+            renderTest();
+
+            // show test area and action bar
+            testContainer.classList.remove('hidden');
+            actionBar.classList.remove('hidden');
+            resultPanel.classList.add('hidden');
+        }
+
+        // ----- fetch bundle -----
+        async function loadBundle() {
+            try {
+                statusEl.innerHTML = '<span>📡 загрузка tests_bundle.json …</span><span class="total-badge">⏳</span>';
+                const resp = await fetch('tests_bundle.json');
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                bundle = data;
+                totalAvailable = countQuestions(bundle);
+                allQuestions = flattenQuestions(bundle);
+
+                totalSpan.textContent = `📚 всего: ${totalAvailable}`;
+                statusEl.innerHTML = '<span>✅ bundle загружен</span>' + totalSpan.outerHTML;
+                // re-append total span (since innerHTML replaced)
+                document.getElementById('totalDisplay').textContent = `📚 всего: ${totalAvailable}`;
+
+                // setup input max and hint
+                nInput.max = totalAvailable;
+                nInput.value = Math.min(5, totalAvailable);
+                maxHint.textContent = `макс. ${totalAvailable}`;
+
+                // enable generate (already enabled)
+            } catch (err) {
+                console.error(err);
+                statusEl.innerHTML = `<span class="error-message">❌ ошибка загрузки: ${err.message}</span>`;
+                totalSpan.textContent = 'ошибка';
+                maxHint.textContent = 'файл не найден';
+            }
+        }
+
+        // ----- event listeners -----
+        generateBtn.addEventListener('click', () => {
+            if (!bundle) {
+                alert('bundle ещё не загружен, повторите через секунду');
+                return;
+            }
+            if (totalAvailable === 0) {
+                alert('bundle не содержит вопросов');
+                return;
+            }
+            startTest();
+        });
+
+        newTestBtn.addEventListener('click', () => {
+            resetToSetup();
+        });
+
+        afterSubmitNewBtn.addEventListener('click', () => {
+            resetToSetup();
+        });
+
+        submitBtn.addEventListener('click', () => {
+            if (!currentQuestions.length) return;
+            gradeAndShow();
+        });
+
+        // also allow Enter on input
+        nInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                generateBtn.click();
+            }
+        });
+
+        // initial load
+        loadBundle();
+
+        // set initial hidden correctly (test/results hidden)
+        testContainer.classList.add('hidden');
+        actionBar.classList.add('hidden');
+        resultPanel.classList.add('hidden');
+    })();
+</script>
 </body>
+</html>
