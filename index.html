@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📋 random test · from bundle</title>
+    <title>📋 random test + все ответы</title>
     <style>
         * {
             box-sizing: border-box;
@@ -126,6 +126,28 @@
             border-radius: 30px;
             margin-left: auto;
         }
+        .setup-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            align-items: center;
+        }
+        .btn-secondary {
+            background: #e2eaf3;
+            border: 1px solid #a8bdd6;
+            color: #1f3b5c;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 0.8rem 2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn-secondary:hover {
+            background: #d0ddec;
+        }
 
         /* test area */
         .test-section {
@@ -192,7 +214,7 @@
             color: #20364e;
             cursor: pointer;
         }
-        /* result highlighting */
+        /* result highlighting (for test mode) */
         .correct-option label {
             font-weight: 600;
             color: #0d671b;
@@ -283,13 +305,25 @@
             text-align: right;
             font-size: 0.9rem;
         }
+        .view-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .view-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #142d49;
+        }
     </style>
 </head>
 <body>
 <div class="app" id="app">
     <h1>
         🧪 тест bundle
-        <small>random · N вопросов</small>
+        <small>случайные N / все ответы</small>
     </h1>
 
     <!-- status & total -->
@@ -306,9 +340,12 @@
             <button id="generateBtn">🎲 начать тест</button>
             <span class="hint" id="maxHint"></span>
         </div>
+        <div class="setup-buttons">
+            <button class="btn-secondary" id="viewAllBtn">📖 все вопросы (ответы)</button>
+        </div>
     </div>
 
-    <!-- dynamic test area (hidden until generate) -->
+    <!-- dynamic test area (hidden until generate or view all) -->
     <div id="testContainer" class="test-section hidden"></div>
 
     <!-- submit & new test buttons (hidden until test starts) -->
@@ -338,6 +375,7 @@
         const setupPanel = document.getElementById('setupPanel');
         const nInput = document.getElementById('nInput');
         const generateBtn = document.getElementById('generateBtn');
+        const viewAllBtn = document.getElementById('viewAllBtn');
         const maxHint = document.getElementById('maxHint');
         const testContainer = document.getElementById('testContainer');
         const actionBar = document.getElementById('actionBar');
@@ -352,6 +390,7 @@
         let allQuestions = [];             // flat array of all questions (with test title)
         let currentQuestions = [];          // selected random questions for this session
         let totalAvailable = 0;
+        let viewingAll = false;             // are we in "view all answers" mode?
 
         // ----- helpers -----
         function countQuestions(bundleData) {
@@ -392,12 +431,37 @@
             return shuffled.slice(0, n);
         }
 
-        // ----- render test (with currentQuestions) -----
-        function renderTest() {
+        // escape for safety
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // ----- core render function (with optional readOnly mode) -----
+        // readOnly = true : all correct options are pre-checked and disabled (answer key mode)
+        function renderQuestions(readOnly = false) {
             testContainer.innerHTML = ''; // clear
+
             if (!currentQuestions.length) {
                 testContainer.innerHTML = '<div class="question-card">⚠️ нет вопросов</div>';
                 return;
+            }
+
+            // if readOnly, add a header with back button
+            if (readOnly) {
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'view-header';
+                headerDiv.innerHTML = `
+                    <h3>📚 все вопросы (ключ ответов)</h3>
+                    <button class="btn" id="backFromAllBtn">← назад</button>
+                `;
+                testContainer.appendChild(headerDiv);
             }
 
             currentQuestions.forEach((q, qIdx) => {
@@ -428,13 +492,22 @@
 
                     const input = document.createElement('input');
                     input.type = type;
-                    input.name = (type === 'radio') ? nameAttr : `q_${qIdx}_opt_${optIdx}`; // name for radio group
+                    input.name = (type === 'radio') ? nameAttr : `q_${qIdx}_opt_${optIdx}`;
                     input.value = optIdx;
                     input.classList.add('option-input');
                     input.dataset.qIdx = qIdx;
                     input.dataset.optIdx = optIdx;
 
-                    // disable after submit will be handled later
+                    // in readOnly mode: mark correct answers as checked, disable all inputs
+                    if (readOnly) {
+                        input.checked = opt.correct;   // show correct answer
+                        input.disabled = true;
+                    } else {
+                        // normal test mode: no pre-checked, enabled
+                        input.checked = false;
+                        input.disabled = false;
+                    }
+
                     const label = document.createElement('label');
                     label.textContent = escapeHTML(opt.text);
 
@@ -446,21 +519,15 @@
                 qDiv.appendChild(optionsDiv);
                 testContainer.appendChild(qDiv);
             });
+
+            // attach back button listener if in readOnly mode
+            if (readOnly) {
+                const backBtn = document.getElementById('backFromAllBtn');
+                if (backBtn) backBtn.addEventListener('click', resetToSetup);
+            }
         }
 
-        // tiny escape (just for safety)
-        function escapeHTML(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>"]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                if (m === '"') return '&quot;';
-                return m;
-            });
-        }
-
-        // ----- grading & result highlighting -----
+        // ----- grading & result highlighting (only for test mode) -----
         function gradeAndShow() {
             let correctCount = 0;
 
@@ -504,7 +571,6 @@
                     const parentDiv = inp.closest('.option-item');
                     if (!parentDiv) return;
 
-                    // remove any previous extra classes
                     parentDiv.classList.remove('correct-option', 'wrong-option', 'missed-option');
 
                     const isCorrectOpt = correctIndices.includes(idx);
@@ -529,14 +595,14 @@
 
         // ----- reset UI to setup state (hide test & results) -----
         function resetToSetup() {
+            viewingAll = false;
             testContainer.classList.add('hidden');
             actionBar.classList.add('hidden');
             resultPanel.classList.add('hidden');
-            // clear test container so old answers disappear
-            testContainer.innerHTML = '';
+            testContainer.innerHTML = ''; // clear any leftover content
             // focus on input
             nInput.focus();
-            // update max hint after load (bundle already loaded)
+            // update max hint
             if (totalAvailable) {
                 nInput.max = totalAvailable;
                 maxHint.textContent = `макс. ${totalAvailable}`;
@@ -545,22 +611,46 @@
 
         // ----- start new test with N -----
         function startTest() {
+            if (!bundle) {
+                alert('bundle ещё не загружен');
+                return;
+            }
+            if (totalAvailable === 0) {
+                alert('bundle не содержит вопросов');
+                return;
+            }
             let n = parseInt(nInput.value, 10);
             if (isNaN(n) || n < 1) n = 1;
-            if (totalAvailable > 0 && n > totalAvailable) n = totalAvailable;
-            nInput.value = n;  // correct if out of range
+            if (n > totalAvailable) n = totalAvailable;
+            nInput.value = n;
 
-            if (!allQuestions.length) {
-                alert('Нет доступных вопросов в bundle');
+            viewingAll = false;
+            currentQuestions = pickRandomQuestions(n);
+            renderQuestions(false);   // normal interactive mode
+
+            // show test area and action bar, hide result panel
+            testContainer.classList.remove('hidden');
+            actionBar.classList.remove('hidden');
+            resultPanel.classList.add('hidden');
+        }
+
+        // ----- show all questions with answers (read-only mode) -----
+        function showAllQuestions() {
+            if (!bundle) {
+                alert('bundle ещё не загружен');
+                return;
+            }
+            if (totalAvailable === 0) {
+                alert('bundle не содержит вопросов');
                 return;
             }
 
-            currentQuestions = pickRandomQuestions(n);
-            renderTest();
+            viewingAll = true;
+            currentQuestions = [...allQuestions];   // all questions
+            renderQuestions(true);                   // readOnly = true (answer key)
 
-            // show test area and action bar
             testContainer.classList.remove('hidden');
-            actionBar.classList.remove('hidden');
+            actionBar.classList.add('hidden');        // no submit buttons
             resultPanel.classList.add('hidden');
         }
 
@@ -584,8 +674,6 @@
                 nInput.max = totalAvailable;
                 nInput.value = Math.min(5, totalAvailable);
                 maxHint.textContent = `макс. ${totalAvailable}`;
-
-                // enable generate (already enabled)
             } catch (err) {
                 console.error(err);
                 statusEl.innerHTML = `<span class="error-message">❌ ошибка загрузки: ${err.message}</span>`;
@@ -595,28 +683,15 @@
         }
 
         // ----- event listeners -----
-        generateBtn.addEventListener('click', () => {
-            if (!bundle) {
-                alert('bundle ещё не загружен, повторите через секунду');
-                return;
-            }
-            if (totalAvailable === 0) {
-                alert('bundle не содержит вопросов');
-                return;
-            }
-            startTest();
-        });
+        generateBtn.addEventListener('click', startTest);
 
-        newTestBtn.addEventListener('click', () => {
-            resetToSetup();
-        });
+        viewAllBtn.addEventListener('click', showAllQuestions);
 
-        afterSubmitNewBtn.addEventListener('click', () => {
-            resetToSetup();
-        });
+        newTestBtn.addEventListener('click', resetToSetup);
+        afterSubmitNewBtn.addEventListener('click', resetToSetup);
 
         submitBtn.addEventListener('click', () => {
-            if (!currentQuestions.length) return;
+            if (!currentQuestions.length || viewingAll) return;
             gradeAndShow();
         });
 
@@ -631,7 +706,7 @@
         // initial load
         loadBundle();
 
-        // set initial hidden correctly (test/results hidden)
+        // set initial hidden correctly
         testContainer.classList.add('hidden');
         actionBar.classList.add('hidden');
         resultPanel.classList.add('hidden');
